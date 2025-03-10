@@ -89,7 +89,12 @@ class _HomepageState extends State<Homepage> {
         } else if (functionCallName == "getDeviceNetworkInfo") {
           setSystemMessage('getting network info...');
           final networkInfo = await getDeviceNetworkInfo();
-          advancedContext += networkInfo.toString();
+          advancedContext += networkInfo;
+        } else if (functionCallName == "getCurrentLocation"){
+          setSystemMessage("getting current location...");
+          final locationInfo = await getCurrentLocation();
+          advancedContext += locationInfo;
+
         } else if (functionCallName == "getDeviceSpecs") {
           setSystemMessage('getting device specs...');
           final deviceSpecs = await getDeviceSpecs();
@@ -117,8 +122,12 @@ class _HomepageState extends State<Homepage> {
           advancedContext += headlines;
         }
         await continueFromFunctionCall(userInput, advancedContext);
+
       }
+
     }
+
+    print(advancedContext);
   }
 
   Future<void> continueFromFunctionCall(userInput, context) async {

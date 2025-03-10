@@ -9,10 +9,41 @@ import 'package:network_info_plus/network_info_plus.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/services.dart';
-
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 // Limits
 var callsLimit = 100;
 var smsLimit = 100;
+
+
+
+Future<String> getCurrentLocation() async {
+  // Check and request location permissions
+  await Permission.location.request();
+
+  // Get the device's current position
+  Position position = await Geolocator.getCurrentPosition(
+    locationSettings: LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 10,
+    ),
+  );
+
+  // Reverse geocode the coordinates to get address details
+  List<Placemark> placemarks =
+  await placemarkFromCoordinates(position.latitude, position.longitude);
+  if (placemarks.isNotEmpty) {
+    Placemark place = placemarks.first;
+    String city = place.locality ?? 'Unknown City';
+    String country = place.country ?? 'Unknown Country';
+
+    String advancedContext =
+        'Current location: Latitude ${position.latitude}, Longitude ${position.longitude}. City: ${city}, Country: ${country}.';
+    return advancedContext;
+  } else {
+    return 'Unable to retrieve placemark information.';
+  }
+}
 Future<String> getDeviceNetworkInfo() async {
   await Permission.location.request();
   await Permission.nearbyWifiDevices.request();
