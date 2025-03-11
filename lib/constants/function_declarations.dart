@@ -134,6 +134,19 @@ final functionDeclarations = [
               Schema.string(description: "Details about each processor core.")),
     }),
   ),
+  //CURRENT LOCATION
+  FunctionDeclaration(
+    "getDeviceLocation",
+    "Retrieves the current location of the device, including latitude, longitude, and address details.",
+    Schema.object(properties: {
+      'latitude': Schema.number(
+          description: "The latitude coordinate of the device's location."),
+      'longitude': Schema.number(
+          description: "The longitude coordinate of the device's location."),
+      'address': Schema.string(
+          description: "The human-readable address of the device's location."),
+    }),
+  ),
 
   // CALL LOGS
   FunctionDeclaration(
