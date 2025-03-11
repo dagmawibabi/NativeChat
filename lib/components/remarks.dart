@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nativechat/constants/constants.dart';
+import 'package:nativechat/constants/remarks.dart';
+import 'package:nativechat/constants/urls.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Remarks extends StatefulWidget {

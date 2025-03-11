@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:nativechat/components/chat_feed/circle_dot.dart';
-import 'package:nativechat/constants/constants.dart';
+import 'package:nativechat/constants/prompt_suggestions.dart';
 import 'package:theme_provider/theme_provider.dart';
+
+import '../state/is_one_sided_chat_mode_notifier.dart';
 
 class PromptSuggestionsFeed extends StatefulWidget {
   const PromptSuggestionsFeed({
     super.key,
     required this.chatWithAI,
     required this.userMessageController,
-    required this.isOneSidedChatMode,
   });
 
   final Function chatWithAI;
   final TextEditingController userMessageController;
-  final bool isOneSidedChatMode;
 
   @override
   State<PromptSuggestionsFeed> createState() => _PromptSuggestionsFeedState();
@@ -21,6 +21,7 @@ class PromptSuggestionsFeed extends StatefulWidget {
 
 class _PromptSuggestionsFeedState extends State<PromptSuggestionsFeed> {
   late List<String> randomPromptSuggestions;
+  var isOneSidedChatModeNotifier = IsOneSidedChatModeNotifier();
 
   @override
   void initState() {
@@ -56,49 +57,40 @@ class _PromptSuggestionsFeedState extends State<PromptSuggestionsFeed> {
                 enterPromptSuggestion(randomPromptSuggestions[index]);
               },
               child: Builder(builder: (context) {
-                return Column(
-                  crossAxisAlignment: widget.isOneSidedChatMode
-                      ? CrossAxisAlignment.start
-                      : CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      randomPromptSuggestions[index],
-                      style: TextStyle(
-                        color:
-                            ThemeProvider.themeOf(context).id == "light_theme"
+                return ValueListenableBuilder(
+                  valueListenable:
+                      isOneSidedChatModeNotifier.isOneSidedChatMode,
+                  builder: (context, value, child) {
+                    return Column(
+                      crossAxisAlignment: value
+                          ? CrossAxisAlignment.start
+                          : CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          randomPromptSuggestions[index],
+                          style: TextStyle(
+                            color: ThemeProvider.themeOf(context).id ==
+                                    "light_theme"
                                 ? Colors.grey[900]!
                                 : Colors.grey[400]!,
-                      ),
-                    ),
-                    SizedBox(height: 25.0),
-                    // Container(
-                    //   height: 25.0,
-                    //   margin: const EdgeInsets.only(left: 12.0),
-                    //   decoration: widget.isOneSidedChatMode
-                    //       ? BoxDecoration(
-                    //           border: Border(
-                    //             left: BorderSide(
-                    //                 color: ThemeProvider.themeOf(context).id ==
-                    //                         "light_theme"
-                    //                     ? Colors.grey[300]!
-                    //                     : Colors.grey[900]!),
-                    //           ),
-                    //         )
-                    //       : BoxDecoration(),
-                    // ),
-                    index == randomPromptSuggestions.length - 1
-                        ? Row(
-                            mainAxisAlignment: widget.isOneSidedChatMode
-                                ? MainAxisAlignment.start
-                                : MainAxisAlignment.center,
-                            children: [
-                              CircleDot(
-                                leftPadding: 4.0,
+                          ),
+                        ),
+                        SizedBox(height: 25.0),
+                        index == randomPromptSuggestions.length - 1
+                            ? Row(
+                                mainAxisAlignment: value
+                                    ? MainAxisAlignment.start
+                                    : MainAxisAlignment.center,
+                                children: [
+                                  CircleDot(
+                                    leftPadding: 4.0,
+                                  )
+                                ],
                               )
-                            ],
-                          )
-                        : Container(),
-                  ],
+                            : Container(),
+                      ],
+                    );
+                  },
                 );
               }),
             );

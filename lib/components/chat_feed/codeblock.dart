@@ -102,14 +102,14 @@ class _CodeblockState extends State<Codeblock> {
         await settingBox.get("currentLightThemeIndex") ?? 0;
     currentDarkThemeIndex = await settingBox.get("currentDarkThemeIndex") ?? 0;
     setState(() {});
-    Hive.close();
+    settingBox.close();
   }
 
   void saveCurrentThemeIndex() async {
     Box settingBox = await Hive.openBox("settings");
     await settingBox.put("currentLightThemeIndex", currentLightThemeIndex);
     await settingBox.put("currentDarkThemeIndex", currentDarkThemeIndex);
-    Hive.close();
+    settingBox.close();
     setState(() {});
   }
 

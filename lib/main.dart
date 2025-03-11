@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:nativechat/models/chat_session.dart';
 import 'package:nativechat/models/settings.dart';
 import 'package:theme_provider/theme_provider.dart';
 // import 'package:flutter/services.dart';
@@ -10,6 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(SettingsAdapter());
+  Hive.registerAdapter(ChatSessionModelAdapter());
   runApp(const MyApp());
 }
 
@@ -21,6 +23,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  ChatSessionModel? session;
   @override
   Widget build(BuildContext context) {
     var darkGreyColor = Color(0xff0a0a0a);
@@ -39,6 +42,7 @@ class _MyAppState extends State<MyApp> {
 
     return ThemeProvider(
       saveThemesOnChange: true,
+      loadThemeOnInit: true,
       defaultThemeId: "dark_theme",
       themes: [
         AppTheme(
@@ -63,6 +67,13 @@ class _MyAppState extends State<MyApp> {
             scaffoldBackgroundColor: darkGreyColor,
             appBarTheme: AppBarTheme(
               backgroundColor: darkGreyColor,
+              iconTheme: IconThemeData(
+                color: Colors.grey[500],
+              ),
+              titleTextStyle: const TextStyle(
+                color: Colors.white,
+                fontSize: 18.0,
+              ),
             ),
             iconTheme: IconThemeData(
               color: Colors.grey[500],
@@ -77,7 +88,7 @@ class _MyAppState extends State<MyApp> {
             debugShowCheckedModeBanner: false,
             initialRoute: "/",
             routes: {
-              "/": (context) => const Homepage(),
+              "/": (context) => Homepage(session: session),
             },
           ),
         ),

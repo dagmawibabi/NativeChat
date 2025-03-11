@@ -8,13 +8,11 @@ class AttachedFileContainer extends StatefulWidget {
     super.key,
     required this.fileName,
     required this.isUser,
-    required this.isOneSidedChatMode,
     this.isAudio = false,
   });
 
   final String fileName;
   final bool isUser;
-  final bool isOneSidedChatMode;
   final bool isAudio;
 
   @override

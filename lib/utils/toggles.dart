@@ -9,5 +9,5 @@ void toggleOneSidedChatMode(isOneSidedChatMode) async {
   // setState(() {
   // });
   await settingBox.put("isOneSidedChatMode", isOneSidedChatMode);
-  Hive.close();
+  settingBox.close();
 }

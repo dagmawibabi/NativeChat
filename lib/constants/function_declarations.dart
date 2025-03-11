@@ -9,10 +9,6 @@ final List promptSuggestions = [
   "What's the top post on r/AskReddit",
   "What are some side projects being built?",
   "Get my network state and information",
-  "What's the top post on r/programming",
-  "What's the top post on r/technology",
-  "what's my current location",
-  "Tell me 3 facts about my current location city",
   "Show me 3 beautiful math equations",
   "Show me my device's specs in table form",
   'Tell me my unread text messages?',
@@ -92,17 +88,6 @@ final functionDeclarations = [
     }),
   ),
 
-  //LOCATION
-  FunctionDeclaration(
-    "getCurrentLocation",
-    "Gets the current location of the device, including the city and country.",
-    Schema.object(properties: {
-      'city': Schema.string(
-          description: "The city where the device is located."),
-      'country': Schema.string(
-              description: "The country where the device is located."),
-    }),
-  ),
   // SPECS
   FunctionDeclaration(
     "getDeviceSpecs",
