@@ -169,6 +169,13 @@ class _ChatHistoryDrawerState extends State<ChatHistoryDrawer> {
                               ),
                               title: selectedIndex == index
                                   ? TextFormField(
+                                      style: TextStyle(
+                                        color:
+                                            ThemeProvider.themeOf(context).id !=
+                                                    "light_theme"
+                                                ? Colors.grey[300]!
+                                                : Colors.grey[800]!,
+                                      ),
                                       decoration: InputDecoration(
                                         border: OutlineInputBorder(
                                           borderRadius:
