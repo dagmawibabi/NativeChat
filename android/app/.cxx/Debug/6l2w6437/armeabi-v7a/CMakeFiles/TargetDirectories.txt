@@ -1,0 +1,2 @@
+D:/flutter/contribute/NativeChat/android/app/.cxx/Debug/6l2w6437/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/flutter/contribute/NativeChat/android/app/.cxx/Debug/6l2w6437/armeabi-v7a/CMakeFiles/rebuild_cache.dir

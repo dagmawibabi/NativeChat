@@ -42,7 +42,8 @@ dependencies:
     flutter_sms_inbox: ^1.0.3
     battery_plus: ^6.2.1
     call_log_new: ^1.0.5
-    installed_apps: ^1.5.2
+    installed_apps:
+        git: https://github.com/VB10/installed_apps
     system_info2: ^4.0.0
     flutter_sharing_intent: ^1.1.1
     animated_text_kit: ^4.2.3

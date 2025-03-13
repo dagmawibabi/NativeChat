@@ -52,6 +52,19 @@ class _ChatHistoryDrawerState extends State<ChatHistoryDrawer> {
     );
   }
 
+  // rename title
+  Future<void> renameSpecificChatHistory(
+      chatBox, sessions, index, newTitle) async {
+    var sessionForRename = chatBox!.values
+        .firstWhere((session) => session.id == sessions[index].id);
+
+    sessionForRename.title = newTitle;
+    await sessionForRename.save();
+    selectedIndex = -1;
+  }
+
+  int selectedIndex = -1;
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -154,16 +167,50 @@ class _ChatHistoryDrawerState extends State<ChatHistoryDrawer> {
                               contentPadding: EdgeInsets.only(
                                 left: 12,
                               ),
-                              title: Text(
-                                sessions[index].title,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: ThemeProvider.themeOf(context).id ==
-                                          "light_theme"
-                                      ? Colors.black
-                                      : Colors.white,
-                                ),
-                              ),
+                              title: selectedIndex == index
+                                  ? TextFormField(
+                                      style: TextStyle(
+                                        color:
+                                            ThemeProvider.themeOf(context).id !=
+                                                    "light_theme"
+                                                ? Colors.grey[300]!
+                                                : Colors.grey[800]!,
+                                      ),
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        isDense: true,
+                                        contentPadding: EdgeInsets.symmetric(
+                                          vertical: 4,
+                                          horizontal: 6,
+                                        ),
+                                      ),
+                                      initialValue: sessions[index].title,
+                                      onFieldSubmitted: (value) => {
+                                        if (value.isNotEmpty)
+                                          {
+                                            renameSpecificChatHistory(
+                                              chatBox,
+                                              sessions,
+                                              index,
+                                              value,
+                                            )
+                                          }
+                                      },
+                                    )
+                                  : Text(
+                                      sessions[index].title,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color:
+                                            ThemeProvider.themeOf(context).id ==
+                                                    "light_theme"
+                                                ? Colors.black
+                                                : Colors.white,
+                                      ),
+                                    ),
                               subtitle: Text(
                                 DateFormat('hh:mm a, MMM d, yyyy')
                                     .format(sessions[index].createdAt!),
@@ -172,20 +219,37 @@ class _ChatHistoryDrawerState extends State<ChatHistoryDrawer> {
                                   color: Colors.grey,
                                 ),
                               ),
-                              trailing: IconButton(
-                                onPressed: () async {
-                                  await deleteSpecificChatHistory(
-                                    chatBox,
-                                    sessions,
-                                    index,
-                                  );
-                                  showToast(context, "Deleted Chat History");
-                                },
-                                icon: Icon(
-                                  Ionicons.trash_outline,
-                                  size: 15,
-                                  color: Theme.of(context).iconTheme.color,
-                                ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () async {
+                                      selectedIndex = index;
+                                      setState(() {});
+                                    },
+                                    child: Icon(
+                                      Ionicons.pencil,
+                                      size: 15,
+                                      color: Theme.of(context).iconTheme.color,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () async {
+                                      await deleteSpecificChatHistory(
+                                        chatBox,
+                                        sessions,
+                                        index,
+                                      );
+                                      showToast(
+                                          context, "Deleted Chat History");
+                                    },
+                                    icon: Icon(
+                                      Ionicons.trash_outline,
+                                      size: 15,
+                                      color: Theme.of(context).iconTheme.color,
+                                    ),
+                                  ),
+                                ],
                               ),
                               onTap: () {
                                 widget.onChatSelected(sessions[index]);
