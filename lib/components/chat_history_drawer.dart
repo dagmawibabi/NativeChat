@@ -23,11 +23,19 @@ class ChatHistoryDrawer extends StatefulWidget {
 
 class _ChatHistoryDrawerState extends State<ChatHistoryDrawer> {
   Box<ChatSessionModel>? chatBox;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
     _openBox();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _openBox() async {
@@ -50,6 +58,42 @@ class _ChatHistoryDrawerState extends State<ChatHistoryDrawer> {
     await chatBox!.delete(
       sessionToDelete.key,
     );
+  }
+
+  Future<void> renameChatHistory(BuildContext context, Box<ChatSessionModel> chatBox, List<ChatSessionModel> sessions, int index) async {
+    final TextEditingController renameController = TextEditingController(text: sessions[index].title);
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Rename Chat'),
+        content: TextField(
+          controller: renameController,
+          decoration: InputDecoration(
+            hintText: 'Enter new name',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, renameController.text),
+            child: Text('Rename'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null && result.trim().isNotEmpty) {
+      var sessionToRename = chatBox.values
+          .firstWhere((session) => session.id == sessions[index].id);
+      sessionToRename.title = result.trim();
+      await sessionToRename.save();
+      showToast(context, "Chat renamed");
+    }
   }
 
   @override
@@ -99,6 +143,40 @@ class _ChatHistoryDrawerState extends State<ChatHistoryDrawer> {
             ),
           ),
 
+          // Search Bar
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search chats',
+                prefixIcon: Icon(Icons.search,
+                    color: ThemeProvider.themeOf(context).id == "light_theme"
+                        ? Colors.grey[600]
+                        : Colors.grey[400]),
+                contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: ThemeProvider.themeOf(context).id == "light_theme"
+                    ? Colors.grey[200]
+                    : Colors.grey[800],
+              ),
+              style: TextStyle(
+                color: ThemeProvider.themeOf(context).id == "light_theme"
+                    ? Colors.black
+                    : Colors.white,
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value.toLowerCase();
+                });
+              },
+            ),
+          ),
+
           // History List
           Expanded(
             child: ValueListenableBuilder(
@@ -113,88 +191,125 @@ class _ChatHistoryDrawerState extends State<ChatHistoryDrawer> {
                   );
                 }
                 var sessions = chatBox!.values.toList().reversed.toList();
+
+                // Filter sessions based on search query
+                if (_searchQuery.isNotEmpty) {
+                  sessions = sessions.where((session) {
+                    // Search in title
+                    if (session.title.toLowerCase().contains(_searchQuery)) {
+                      return true;
+                    }
+
+                    // Search in messages
+                    if (session.messages.isNotEmpty) {
+                      for (var message in session.messages) {
+                        if (message['content']?.toString().toLowerCase().contains(_searchQuery) ?? false) {
+                          return true;
+                        }
+                      }
+                    }
+
+                    return false;
+                  }).toList();
+                }
+
                 return sessions.isEmpty
                     ? Center(
-                        child: Text(
-                          "No chat history",
+                  child: Text(
+                    _searchQuery.isEmpty ? "No chat history" : "No results found",
+                    style: TextStyle(
+                      color: ThemeProvider.themeOf(context).id ==
+                          "light_theme"
+                          ? Colors.black
+                          : Colors.white,
+                    ),
+                  ),
+                )
+                    : ListView.builder(
+                  itemCount: sessions.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: index == 0
+                              ? BorderSide(
+                            color:
+                            ThemeProvider.themeOf(context).id ==
+                                "light_theme"
+                                ? Colors.grey[300]!
+                                : Colors.grey[800]!,
+                            width: 0.3,
+                          )
+                              : BorderSide(color: Colors.transparent),
+                          bottom: BorderSide(
+                            color: ThemeProvider.themeOf(context).id ==
+                                "light_theme"
+                                ? Colors.grey[300]!
+                                : Colors.grey[800]!,
+                            width: 0.3,
+                          ),
+                        ),
+                      ),
+                      child: ListTile(
+                        contentPadding: EdgeInsets.only(
+                          left: 12,
+                        ),
+                        title: Text(
+                          sessions[index].title,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: ThemeProvider.themeOf(context).id ==
-                                    "light_theme"
+                                "light_theme"
                                 ? Colors.black
                                 : Colors.white,
                           ),
                         ),
-                      )
-                    : ListView.builder(
-                        itemCount: sessions.length,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              border: Border(
-                                top: index == 0
-                                    ? BorderSide(
-                                        color:
-                                            ThemeProvider.themeOf(context).id ==
-                                                    "light_theme"
-                                                ? Colors.grey[300]!
-                                                : Colors.grey[800]!,
-                                        width: 0.3,
-                                      )
-                                    : BorderSide(color: Colors.transparent),
-                                bottom: BorderSide(
-                                  color: ThemeProvider.themeOf(context).id ==
-                                          "light_theme"
-                                      ? Colors.grey[300]!
-                                      : Colors.grey[800]!,
-                                  width: 0.3,
-                                ), // Dim border bottom
-                              ),
-                            ),
-                            child: ListTile(
-                              contentPadding: EdgeInsets.only(
-                                left: 12,
-                              ),
-                              title: Text(
-                                sessions[index].title,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: ThemeProvider.themeOf(context).id ==
-                                          "light_theme"
-                                      ? Colors.black
-                                      : Colors.white,
-                                ),
-                              ),
-                              subtitle: Text(
-                                DateFormat('hh:mm a, MMM d, yyyy')
-                                    .format(sessions[index].createdAt!),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              trailing: IconButton(
-                                onPressed: () async {
-                                  await deleteSpecificChatHistory(
-                                    chatBox,
-                                    sessions,
-                                    index,
-                                  );
-                                  showToast(context, "Deleted Chat History");
-                                },
-                                icon: Icon(
-                                  Ionicons.trash_outline,
-                                  size: 15,
-                                  color: Theme.of(context).iconTheme.color,
-                                ),
-                              ),
-                              onTap: () {
-                                widget.onChatSelected(sessions[index]);
-                                Navigator.pop(context);
+                        subtitle: Text(
+                          DateFormat('hh:mm a, MMM d, yyyy')
+                              .format(sessions[index].createdAt!),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                renameChatHistory(context, chatBox!, sessions, index);
                               },
+                              icon: Icon(
+                                Ionicons.pencil_outline,
+                                size: 15,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
                             ),
-                          );
+                            IconButton(
+                              onPressed: () async {
+                                await deleteSpecificChatHistory(
+                                  chatBox,
+                                  sessions,
+                                  index,
+                                );
+                                showToast(context, "Deleted Chat History");
+                              },
+                              icon: Icon(
+                                Ionicons.trash_outline,
+                                size: 15,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          widget.onChatSelected(sessions[index]);
+                          Navigator.pop(context);
                         },
-                      );
+                      ),
+                    );
+                  },
+                );
               },
             ),
           ),
