@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nativechat/components/chat_feed/circle_dot.dart';
-import 'package:nativechat/constants/prompt_suggestions.dart';
+import 'package:nativechat/ai/prompt_suggestions.dart';
 import 'package:theme_provider/theme_provider.dart';
 
 import '../state/is_one_sided_chat_mode_notifier.dart';

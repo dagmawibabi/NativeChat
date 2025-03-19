@@ -375,4 +375,57 @@ final functionDeclarations = [
       },
     ),
   ),
+
+  // Save Memory
+  FunctionDeclaration(
+    "saveMemory",
+    "Saves something about the user in your memory for future reference.",
+    Schema.object(
+      properties: {
+        'newMemory': Schema.string(
+          description:
+              "The new memory you found in your chat to save in the memory bank.",
+        ),
+      },
+    ),
+  ),
+
+  // Get Memories
+  FunctionDeclaration(
+    "getMemories",
+    "Retrieves everything you remember about the user from previous conversations.",
+    Schema.object(
+      properties: {
+        'memory': Schema.string(
+          description: "The old memory you found saved.",
+        ),
+      },
+    ),
+  ),
+
+  // Remove One Memory
+  FunctionDeclaration(
+    "forgetOneMemory",
+    "Delete a particular memory about the user from memory.",
+    Schema.object(
+      properties: {
+        'memory': Schema.string(
+          description: "The sppecific memory you are removing",
+        ),
+      },
+    ),
+  ),
+
+  // Remove Memories
+  FunctionDeclaration(
+    "forgetMemories",
+    "Deletes everything you remember about the user from memory.",
+    Schema.object(
+      properties: {
+        'memory': Schema.string(
+          description: "The old memory you found saved.",
+        ),
+      },
+    ),
+  ),
 ];

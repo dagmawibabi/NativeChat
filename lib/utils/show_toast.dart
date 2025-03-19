@@ -14,7 +14,7 @@ void showToast(context, title) {
       ),
     ),
     animationType: AnimationType.fromTop,
-    toastDuration: Duration(milliseconds: 1250),
+    toastDuration: Duration(milliseconds: 1400),
     backgroundColor: ThemeProvider.themeOf(context).id == "light_theme"
         ? Colors.white
         : const Color(0xff1a1a1a),

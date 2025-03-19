@@ -267,7 +267,7 @@ class _ChatHistoryDrawerState extends State<ChatHistoryDrawer> {
           Padding(
             padding: const EdgeInsets.only(
               left: 5.0,
-              right: 15.0,
+              right: 5.0,
               bottom: 10.0,
             ),
             child: Row(

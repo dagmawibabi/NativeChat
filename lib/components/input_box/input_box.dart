@@ -49,7 +49,7 @@ class _InputBoxState extends State<InputBox> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(
-        left: 18.0,
+        left: 10.0,
         right: 8.0,
         top: 2.0,
         bottom: 10.0,
@@ -66,33 +66,34 @@ class _InputBoxState extends State<InputBox> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          widget.isInVoiceMode
-              ? const SizedBox.shrink()
-              : MainTextField(
-                  userMessageController: widget.userMessageController,
-                ),
+          MainTextField(
+            userMessageController: widget.userMessageController,
+          ),
           const SizedBox(height: 12.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Attach File Menu and Voice Mode
-              Row(
-                spacing: 10.0,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // Attach Files
-                  AttachFilePopupMenu(
-                    onPickFile: widget.onPickFile,
-                    onPickImage: widget.onPickImage,
-                    onPickAudio: widget.onPickAudio,
-                    onPickCamera: widget.onPickCamera,
-                  ),
-                  // Voice Mode
-                  VoiceModeButton(
-                    toggleVoiceMode: widget.toggleVoiceMode,
-                    isInVoiceMode: widget.isInVoiceMode,
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.only(left: 4.0),
+                child: Row(
+                  spacing: 10.0,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // Attach Files
+                    AttachFilePopupMenu(
+                      onPickFile: widget.onPickFile,
+                      onPickImage: widget.onPickImage,
+                      onPickAudio: widget.onPickAudio,
+                      onPickCamera: widget.onPickCamera,
+                    ),
+                    // Voice Mode
+                    VoiceModeButton(
+                      toggleVoiceMode: widget.toggleVoiceMode,
+                      isInVoiceMode: widget.isInVoiceMode,
+                    ),
+                  ],
+                ),
               ),
               // Send and Mic Button
               widget.isInVoiceMode
