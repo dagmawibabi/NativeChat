@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
@@ -6,6 +8,8 @@ import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
 import 'package:flutter_sharing_intent/model/sharing_file.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:hive/hive.dart';
+import 'package:nativechat/ai/function_calls/ai_memory/forget_memories.dart';
+import 'package:nativechat/ai/function_calls/ai_memory/get_memories.dart';
 import 'package:nativechat/components/apikey_input.dart';
 import 'package:nativechat/components/attachment_preview/attachment_preview.dart';
 import 'package:nativechat/components/chat_feed/conversation_feed.dart';
@@ -14,11 +18,12 @@ import 'package:nativechat/components/home_appbar.dart';
 import 'package:nativechat/components/input_box/input_box.dart';
 import 'package:nativechat/components/prompt_suggestions.dart';
 import 'package:nativechat/components/remarks.dart';
-import 'package:nativechat/constants/function_declarations.dart';
-import 'package:nativechat/constants/system_prompt.dart';
+import 'package:nativechat/ai/function_declarations.dart';
+import 'package:nativechat/ai/system_prompt.dart';
 import 'package:nativechat/state/is_one_sided_chat_mode_notifier.dart';
-import 'package:nativechat/utils/api_calls.dart';
-import 'package:nativechat/utils/get_device_context.dart';
+import 'package:nativechat/ai/function_calls/api_calls.dart';
+import 'package:nativechat/ai/function_calls/get_device_context.dart';
+import 'package:nativechat/ai/function_calls/ai_memory/save_memory.dart';
 import 'package:nativechat/utils/show_toast.dart';
 import 'package:nativechat/utils/tts.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -95,7 +100,10 @@ class _HomepageState extends State<Homepage> {
   var appFunctions = [
     'clearConversation',
     'toggleOneSidedChatMode',
-    'toggleDarkMode'
+    'toggleDarkMode',
+    'saveMemory',
+    'getMemories',
+    'forgetMemories',
   ];
 
   Future<void> functionCallHandler(userInput, functionCalls) async {
@@ -124,6 +132,30 @@ class _HomepageState extends State<Homepage> {
             setSystemMessage('changing theme...');
             ThemeProvider.controllerOf(context).nextTheme();
             gotResponseFromAI('finished toggling the theme', true);
+          }
+        } else if (functionCallName == "saveMemory") {
+          await saveMemory(eachFunctionCall.args['newMemory']);
+          var oldMemories = await getMemories();
+          if (oldMemories.isEmpty) {
+            gotResponseFromAI('I will remember that.', true);
+          } else {
+            advancedContext +=
+                "YOU SAVED THIS INFORMATION TO MEMORY: ${eachFunctionCall.args['newMemory']}";
+            await continueFromFunctionCall(userInput, advancedContext);
+          }
+          showToast(context, "Memory Updated");
+        } else if (functionCallName == "forgetMemories") {
+          await forgetMemory();
+          gotResponseFromAI('forgotten everything!', true);
+          showToast(context, "Memory Updated");
+        } else if (functionCallName == "getMemories") {
+          var oldMemories = await getMemories();
+          if (oldMemories.isEmpty) {
+            gotResponseFromAI('I have no memories of you.', true);
+          } else {
+            advancedContext =
+                "YOU RETRIEVED THIS INFORMATION FROM MEMORY. THESE ARE WHAT YOU REMEMBER ABOUT THE USER: ${oldMemories.toString()}";
+            await continueFromFunctionCall(userInput, advancedContext);
           }
         }
       } else {
@@ -171,9 +203,10 @@ class _HomepageState extends State<Homepage> {
   }
 
   Future<void> continueFromFunctionCall(userInput, context) async {
+    // Send Message to AI
     final chat = model.startChat(history: []);
     final content = Content.text(
-        "$userInput CONTEXT: $context. CHAT-HISTORY: ${chatHistory.toString()}");
+        "$userInput CONTEXT: $context. CHAT-HISTORY: ${chatHistory.toString()}.");
     final stream = chat.sendMessageStream(content);
     String accumulatedResponse = '';
     bool isFirstChuck = true;
