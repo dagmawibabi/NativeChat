@@ -15,19 +15,19 @@ NativeChat is a powerful application designed to bring seamless, context-aware i
 
 ## Function Declarations
 
--   **Time** (getDeviceTime): Fetches the current date, time, and timezone of the device.
+-   **Time** (_getDeviceTime_): Fetches the current date, time, and timezone of the device.
 
--   **Specs** (getDeviceSpecs): Retrieves system specifications and hardware details of the device.
+-   **Specs** (_getDeviceSpecs_): Retrieves system specifications and hardware details of the device.
 
--   **Call Logs** (getCallLogs): Retrieves a list of call history with details about each call (incoming, outgoing, missed).
+-   **Call Logs** (_getCallLogs_): Retrieves a list of call history with details about each call (incoming, outgoing, missed).
 
--   **SMS** (getSMS): Retrieves a list of text messages, including sender, content, date, and read status.
+-   **SMS** (_getSMS_): Retrieves a list of text messages, including sender, content, date, and read status.
 
--   **Battery** (getDeviceBattery): Provides the current battery level as a percentage and its charging state.
+-   **Battery** (_getDeviceBattery_): Provides the current battery level as a percentage and its charging state.
 
--   **Apps** (getDeviceApps): Returns a list of installed apps and their details such as name, package, and version.
+-   **Apps** (_getDeviceApps_): Returns a list of installed apps and their details such as name, package, and version.
 
--   **Clear Conversation** (clearConversation): Clears the current conversation history.
+-   **Clear Conversation** (_clearConversation_): Clears the current conversation history.
 
 ## Illustrations
 
