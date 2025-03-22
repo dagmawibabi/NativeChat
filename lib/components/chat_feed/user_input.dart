@@ -35,7 +35,7 @@ class _UserInputState extends State<UserInput> {
               value == true ? MainAxisAlignment.start : MainAxisAlignment.end,
           children: [
             GestureDetector(
-              onLongPress: () async {
+              onDoubleTap: () async {
                 await copyToClipboard(widget.text);
                 showToast(context, "Copied");
               },
@@ -66,7 +66,10 @@ class _UserInputState extends State<UserInput> {
                   padding: value
                       ? EdgeInsets.all(0.0)
                       : EdgeInsets.symmetric(horizontal: 14.0, vertical: 6.0),
-                  child: GptMarkdown(
+                  child: SelectableRegion(
+                  focusNode : FocusNode(),
+                   selectionControls:MaterialTextSelectionControls(),
+                   child: GptMarkdown(
                     widget.text,
                     style: TextStyle(
                       color: ThemeProvider.themeOf(context).id == "light_theme"
@@ -85,7 +88,7 @@ class _UserInputState extends State<UserInput> {
                       );
                     },
                   ),
-
+        ),
                   // Text(
                   //   widget.text,
                   //   textAlign: value == true ? TextAlign.left : TextAlign.right,
