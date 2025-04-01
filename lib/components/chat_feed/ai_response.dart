@@ -37,9 +37,9 @@ class _AIResponseState extends State<AIResponse> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
-              onLongPress: () async {
+              onDoubleTap: () async {
                 await copyToClipboard(widget.text);
-                showToast(context, "Copied Reponse");
+                showToast(context, "Copied Response");
               },
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.9,
@@ -62,6 +62,9 @@ class _AIResponseState extends State<AIResponse> {
                   padding: EdgeInsets.symmetric(
                     horizontal: 8.0,
                   ),
+                child:SelectableRegion(
+                       focusNode : FocusNode(),
+                      selectionControls:MaterialTextSelectionControls(),
                   child: GptMarkdown(
                     widget.text,
                     style: TextStyle(
@@ -81,6 +84,7 @@ class _AIResponseState extends State<AIResponse> {
                       );
                     },
                   ),
+        ),
                 ),
               ),
             ),
